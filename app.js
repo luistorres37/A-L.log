@@ -1,35 +1,19 @@
-// app.js
-// Simple starting point to track repairs & inventory
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("repairForm");
+  const input = document.getElementById("repairInput");
+  const list = document.getElementById("repairList");
 
-let repairs = [];
-let inventory = [];
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
 
-// Add a repair
-function addRepair(description) {
-    const repair = {
-        id: repairs.length + 1,
-        description: description,
-        date: new Date().toLocaleString()
-    };
-    repairs.push(repair);
-    console.log("Repair added:", repair);
-}
+    // Create new list item
+    const li = document.createElement("li");
+    li.textContent = input.value;
 
-// Add an inventory item
-function addInventory(itemName, qty) {
-    const item = {
-        id: inventory.length + 1,
-        name: itemName,
-        quantity: qty
-    };
-    inventory.push(item);
-    console.log("Inventory updated:", item);
-}
+    // Add it to the list
+    list.appendChild(li);
 
-// Example starter data
-addRepair("Fixed broken tile");
-addInventory("Thinset bags", 10);
-
-// Display current data
-console.log("All Repairs:", repairs);
-console.log("All Inventory:", inventory);
+    // Clear input
+    input.value = "";
+  });
+});
