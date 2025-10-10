@@ -3,17 +3,32 @@ document.addEventListener("DOMContentLoaded", () => {
   const input = document.getElementById("repairInput");
   const list = document.getElementById("repairList");
 
+  // Load saved repairs from localStorage
+  const savedRepairs = JSON.parse(localStorage.getItem("repairs")) || [];
+  savedRepairs.forEach((repair) => {
+    addRepairToList(repair);
+  });
+
   form.addEventListener("submit", (e) => {
     e.preventDefault();
+    const repairText = input.value;
 
-    // Create new list item
-    const li = document.createElement("li");
-    li.textContent = input.value;
+    if (repairText.trim() === "") return;
 
-    // Add it to the list
-    list.appendChild(li);
+    // Add to page
+    addRepairToList(repairText);
+
+    // Save to localStorage
+    savedRepairs.push(repairText);
+    localStorage.setItem("repairs", JSON.stringify(savedRepairs));
 
     // Clear input
     input.value = "";
   });
+
+  function addRepairToList(text) {
+    const li = document.createElement("li");
+    li.textContent = text;
+    list.appendChild(li);
+  }
 });
