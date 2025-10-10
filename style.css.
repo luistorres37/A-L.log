@@ -1,21 +1,24 @@
-body {
-  font-family: Arial, sans-serif;
-  margin: 20px;
-  background-color: #f8f8f8;
-}
+/* basic look */
+:root { font-family: -apple-system, system-ui, Segoe UI, Roboto, Arial; }
+body { margin: 16px; background:#fafafa; color:#222; }
+.app { max-width: 900px; margin: 0 auto; }
+h1 { margin: 0 0 6px; }
+.small { color:#666; font-size:12px; }
 
-h1 {
-  color: #333;
-}
+nav { display:flex; gap:8px; margin: 14px 0 18px; flex-wrap: wrap; }
+nav button { padding:8px 12px; border:1px solid #ddd; background:#f6f6f6; border-radius:8px; }
+nav button.active { background:#e9f2ff; border-color:#9ec0ff; }
 
-p {
-  color: #555;
-}
+.card { background:#fff; border:1px solid #e6e6e6; border-radius:10px; padding:14px; margin:12px 0; }
+.grid { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:8px; }
+@media (max-width:700px){ .grid{ grid-template-columns: 1fr 1fr; } }
+label { font-size:12px; color:#555; display:block; }
+input, select { width:100%; padding:8px; border:1px solid #ddd; border-radius:8px; }
 
-#repairList li button {
-  padding: 4px 8px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background: #f6f6f6;
-}
-#repairList li button:active { transform: scale(0.98); }
+.filters { display:flex; gap:8px; margin:8px 0 4px; flex-wrap:wrap; }
+.filters button { padding:6px 10px; border:1px solid #ddd; border-radius:8px; background:#f6f6f6; }
+.filters button.active { background:#eefbe8; border-color:#b7e2a5; }
+
+table { width:100%; border-collapse:collapse; font-size:14px; }
+th, td { border-bottom:1px solid #eee; padding:8px; text-align:left; vertical-align:top; }
+.actions button { margin-right:6px; padding:4px 8px; border:1px solid #ddd; border-radius:6px; background:#f6f6f6; }
