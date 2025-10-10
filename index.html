@@ -1,142 +1,96 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>A&L Log</title>
-
-  <!-- 1) Font + stylesheet (cache-busted with ?v=5) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=5">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <main class="container">
-    <header>
-      <div>
-        <h1>A&L Log</h1>
-        <p class="subtitle">Jobs and inventory for the crew. Data saves on your phone.</p>
-      </div>
-    </header>
 
-    <nav>
-      <button class="active" data-tab="jobs">Jobs</button>
-      <button data-tab="inventory">Inventory</button>
-      <button data-tab="backup">Export / Import</button>
+    <h1 class="app-title">A&L Log</h1>
+    <p class="app-sub">Jobs and inventory for the crew. Data saves on your phone.</p>
+
+    <!-- Tabs -->
+    <nav class="nav">
+      <button id="jobsTab" class="tab active" type="button">Jobs</button>
+      <button id="inventoryTab" class="tab" type="button">Inventory</button>
+      <button id="importTab" class="tab" type="button">Export / Import</button>
     </nav>
 
-    <!-- JOBS -->
-    <section id="jobs" class="card">
+    <!-- Jobs -->
+    <section id="jobsSection" class="card">
       <h2>Jobs</h2>
-      <form id="jobForm">
-        <div class="form-row">
-          <div>
-            <label>Lot # / Name</label>
-            <input id="jobLot" placeholder="Lot-7531">
-          </div>
-          <div>
-            <label>Address</label>
-            <input id="jobAddr" placeholder="123 Main St, City">
-          </div>
-          <div>
-            <label>Task</label>
-            <input id="jobTask" placeholder="Backsplash, demo, etc.">
-          </div>
-          <div>
-            <label>Date</label>
-            <input id="jobDate" type="date">
-          </div>
-          <div>
-            <label>Status</label>
-            <select id="jobStatus">
-              <option value="todo">To-do</option>
-              <option value="done">Done</option>
-            </select>
-          </div>
+      <div class="form-grid">
+        <input id="jobLot" placeholder="Lot # / Name" />
+        <input id="jobAddress" placeholder="Address" />
+        <input id="jobTask" class="full" placeholder="Task (Backsplash, Demo, etc.)" />
+        <input id="jobDate" type="date" />
+        <select id="jobStatus">
+          <option value="todo">To-do</option>
+          <option value="done">Done</option>
+        </select>
+      </div>
+      <div class="row mt-12">
+        <button id="addJobBtn" class="btn btn-primary" type="button">Add job</button>
+        <div class="row">
+          <button id="filterAll" class="btn-chip active" type="button">All</button>
+          <button id="filterTodo" class="btn-chip" type="button">To-do</button>
+          <button id="filterDone" class="btn-chip" type="button">Done</button>
         </div>
-        <div style="margin-top:12px">
-          <button class="btn" type="submit">Add job</button>
-        </div>
-      </form>
-
-      <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
-        <button class="btn secondary active" data-filter="all">All</button>
-        <button class="btn secondary" data-filter="todo">To-do</button>
-        <button class="btn secondary" data-filter="done">Done</button>
       </div>
 
-      <table class="table" style="margin-top:10px;">
-        <thead>
-          <tr><th>Lot</th><th>Address</th><th>Task</th><th>Date</th><th>Status</th><th> </th></tr>
-        </thead>
-        <tbody id="jobsTable"></tbody>
+      <table id="jobsTable" class="table mt-18">
+        <thead><tr><th>Lot</th><th>Address</th><th>Task</th><th>Date</th><th>Status</th><th></th></tr></thead>
+        <tbody></tbody>
       </table>
     </section>
 
-    <!-- INVENTORY -->
-    <section id="inventory" class="card hidden">
+    <!-- Inventory -->
+    <section id="inventorySection" class="card hidden">
       <h2>Inventory</h2>
-      <form id="invForm">
-        <div class="form-row">
-          <div>
-            <label>Type</label>
-            <select id="invType">
-              <option value="caulk">Caulk</option>
-              <option value="grout">Grout</option>
-              <option value="tool">Tool</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-          <div>
-            <label>Name / Color</label>
-            <input id="invName" placeholder="Mapei #38 Avalanche">
-          </div>
-          <div>
-            <label>Qty</label>
-            <input id="invQty" type="number" inputmode="numeric" placeholder="0">
-          </div>
-          <div>
-            <label>Location</label>
-            <input id="invLoc" placeholder="Truck, Garage">
-          </div>
+      <div class="form-grid">
+        <select id="invType">
+          <option value="Caulk">Caulk</option>
+          <option value="Grout">Grout</option>
+          <option value="Tool">Tool</option>
+          <option value="Other">Other</option>
+        </select>
+        <input id="invName" placeholder="Name / Color (e.g., Mapei #38 Avalanche)" />
+        <input id="invQty" type="number" min="0" placeholder="Qty" />
+        <input id="invLoc" placeholder="Location (Truck, Garage)" />
+      </div>
+      <div class="row mt-12">
+        <button id="addInvBtn" class="btn btn-primary" type="button">Add / Update item</button>
+        <div class="row">
+          <button id="invAll" class="btn-chip active" type="button">All</button>
+          <button id="invCaulk" class="btn-chip" type="button">Caulk</button>
+          <button id="invGrout" class="btn-chip" type="button">Grout</button>
+          <button id="invTool" class="btn-chip" type="button">Tool</button>
+          <button id="invOther" class="btn-chip" type="button">Other</button>
         </div>
-        <div style="margin-top:12px">
-          <button class="btn" type="submit">Add / Update item</button>
-        </div>
-      </form>
-
-      <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
-        <button class="btn secondary active" data-itype="all">All</button>
-        <button class="btn secondary" data-itype="caulk">Caulk</button>
-        <button class="btn secondary" data-itype="grout">Grout</button>
-        <button class="btn secondary" data-itype="tool">Tool</button>
-        <button class="btn secondary" data-itype="other">Other</button>
       </div>
 
-      <table class="table" style="margin-top:10px;">
-        <thead>
-          <tr><th>Type</th><th>Name</th><th>Qty</th><th>Location</th><th> </th></tr>
-        </thead>
-        <tbody id="invTable"></tbody>
+      <table id="invTable" class="table mt-18">
+        <thead><tr><th>Type</th><th>Name</th><th>Qty</th><th>Location</th><th></th></tr></thead>
+        <tbody></tbody>
       </table>
     </section>
 
-    <!-- BACKUP -->
-    <section id="backup" class="card hidden">
+    <!-- Export / Import -->
+    <section id="importExport" class="card hidden">
       <h2>Export / Import</h2>
-      <div class="backup">
-        <button id="exportBtn" class="btn">Export data</button>
-        <label class="btn ghost" style="position:relative; overflow:hidden;">
-          <input id="importFile" type="file" accept="application/json" style="position:absolute; inset:0; opacity:0;">
-          Choose file…
-        </label>
-        <button id="importBtn" class="btn secondary">Import</button>
+      <div class="row">
+        <button id="exportBtn" class="btn btn-ghost" type="button">Export data</button>
+        <input id="importFile" type="file" accept=".json" />
+        <button id="importBtn" class="btn btn-primary" type="button">Import</button>
       </div>
     </section>
+
+    <div id="toast" class="toast"></div>
   </main>
 
-  <!-- 2) Your JavaScript (cache-busted too) -->
-  <script src="app.js?v=5"></script>
+  <script src="app.js"></script>
 </body>
 </html>
