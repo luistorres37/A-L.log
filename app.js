@@ -1,159 +1,174 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const STORE_KEY = "al-log-v1";
-  const $ = (s)=>document.querySelector(s);
+// A&L Log - minimal, mobile friendly
 
-  let state = load() || { jobs: [], inventory: [] };
-  save(); // ensure key exists
+// Utilities -----------------------------
+const $ = id => document.getElementById(id);
+const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+const load = (k, d) => JSON.parse(localStorage.getItem(k) || JSON.stringify(d));
 
-  function load(){ try { return JSON.parse(localStorage.getItem(STORE_KEY)); } catch { return null; } }
-  function save(){ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+// State --------------------------------
+let jobs = load('jobs', []);
+let inventory = load('inventory', []);
 
-  // ----- tabs -----
-  document.querySelectorAll("nav button").forEach(b=>{
-    b.addEventListener("click", () => {
-      document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
-      b.classList.add("active");
-      ["jobs","inventory","backup"].forEach(id=>{
-        document.getElementById(id).style.display = (b.dataset.tab===id)? "":"none";
-      });
-    });
+// TABS ---------------------------------
+const tabs = {
+  jobs:       $('jobsSection'),
+  inventory:  $('inventorySection'),
+  import:     $('importSection'),
+};
+
+function showTab(name) {
+  tabs.jobs.hidden = name !== 'jobs';
+  tabs.inventory.hidden = name !== 'inventory';
+  tabs.import.hidden = name !== 'import';
+
+  // active pill
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  if (name === 'jobs')       $('jobsTab').classList.add('active');
+  if (name === 'inventory')  $('inventoryTab').classList.add('active');
+  if (name === 'import')     $('importTab').classList.add('active');
+}
+
+// JOBS ---------------------------------
+function addJob() {
+  const lot    = $('lotInput').value.trim();
+  const addr   = $('addressInput').value.trim();
+  const task   = $('taskInput').value.trim();
+  const date   = $('dateInput').value || '';
+  const status = $('statusSelect').value;
+
+  if (!lot && !addr && !task) return;
+
+  jobs.push({ lot, addr, task, date, status });
+  save('jobs', jobs);
+  renderJobs(currentJobFilter);
+  // clear text inputs (keep status)
+  $('lotInput').value = '';
+  $('addressInput').value = '';
+  $('taskInput').value = '';
+  $('dateInput').value = '';
+}
+
+let currentJobFilter = 'all'; // 'all' | 'To-do' | 'Done'
+
+function renderJobs(filter = 'all') {
+  currentJobFilter = filter;
+  const tbody = $('jobsBody');
+  tbody.innerHTML = '';
+
+  const data = filter === 'all' ? jobs : jobs.filter(j => j.status === filter);
+
+  data.forEach(j => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${j.lot || ''}</td>
+      <td>${j.addr || ''}</td>
+      <td>${j.task || ''}</td>
+      <td>${j.date || ''}</td>
+      <td>${j.status}</td>
+    `;
+    tbody.appendChild(tr);
   });
+}
 
-  // ===== JOBS =====
-  const jobsT = $("#jobsTable");
-  $("#jobForm").addEventListener("submit",(e)=>{
-    e.preventDefault();
-    const job = {
-      id: Date.now(),
-      lot: $("#jobLot").value.trim(),
-      addr: $("#jobAddr").value.trim(),
-      task: $("#jobTask").value.trim(),
-      date: $("#jobDate").value,
-      status: $("#jobStatus").value // todo | done
-    };
-    if(!job.lot) return;
-    state.jobs.unshift(job); save(); e.target.reset(); renderJobs(activeJobFilter());
-  });
+// INVENTORY -----------------------------
+let invFilter = 'All';
 
-  document.querySelectorAll('[data-filter]').forEach(btn=>{
-    btn.addEventListener("click",()=>{
-      document.querySelectorAll('[data-filter]').forEach(b=>b.classList.remove("active"));
-      btn.classList.add("active");
-      renderJobs(btn.dataset.filter);
-    });
-  });
+function addOrUpdateItem() {
+  const type = $('invType').value;
+  const name = $('invName').value.trim();
+  const qty  = parseInt($('invQty').value || '0', 10);
+  const loc  = $('invLoc').value.trim();
 
-  function activeJobFilter(){ return document.querySelector('[data-filter].active')?.dataset.filter || "all"; }
+  if (!name) return;
 
-  function renderJobs(filter="all"){
-    jobsT.innerHTML="";
-    const list = state.jobs.filter(j=> filter==="all" ? true : j.status===filter);
-    list.forEach(j=>{
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${j.lot}</td>
-        <td>${j.addr||""}</td>
-        <td>${j.task||""}</td>
-        <td>${j.date||""}</td>
-        <td>${j.status==="done"?"✅ Done":"⏳ To-do"}</td>
-        <td class="actions">
-          <button data-id="${j.id}" data-act="toggle">${j.status==="done"?"Mark To-do":"Mark Done"}</button>
-          <button data-id="${j.id}" data-act="del">Delete</button>
-        </td>`;
-      jobsT.appendChild(tr);
-    });
+  const idx = inventory.findIndex(i => i.type === type && i.name.toLowerCase() === name.toLowerCase());
+  if (idx >= 0) {
+    inventory[idx].qty = qty;
+    inventory[idx].loc = loc;
+  } else {
+    inventory.push({ type, name, qty, loc });
   }
+  save('inventory', inventory);
+  renderInventory(invFilter);
 
-  // event delegation for job buttons
-  jobsT.addEventListener("click",(e)=>{
-    const btn = e.target.closest("button[data-act]");
-    if(!btn) return;
-    const id = btn.dataset.id;
-    const act = btn.dataset.act;
-    if(act==="toggle"){
-      const j = state.jobs.find(x=> String(x.id)===id);
-      j.status = j.status==="done" ? "todo" : "done";
-    } else if (act==="del"){
-      state.jobs = state.jobs.filter(x=> String(x.id)!==id);
-    }
-    save(); renderJobs(activeJobFilter());
+  $('invName').value = '';
+  $('invQty').value = '';
+  $('invLoc').value = '';
+}
+
+function renderInventory(filter = 'All') {
+  invFilter = filter;
+  const tbody = $('invBody');
+  tbody.innerHTML = '';
+
+  const data = filter === 'All' ? inventory : inventory.filter(i => i.type === filter);
+
+  data.forEach(i => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${i.type}</td>
+      <td>${i.name}</td>
+      <td>${i.qty}</td>
+      <td>${i.loc || ''}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// EXPORT / IMPORT -----------------------
+$('importFile')?.addEventListener('change', e => {
+  $('fileName').textContent = e.target.files[0]?.name || 'no file selected';
+});
+
+function doExport() {
+  const blob = new Blob([ JSON.stringify({ jobs, inventory }, null, 2) ], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'al-log-data.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function doImport() {
+  const f = $('importFile').files[0];
+  if (!f) return;
+  const text = await f.text();
+  const data = JSON.parse(text || '{}');
+  jobs = data.jobs || [];
+  inventory = data.inventory || [];
+  save('jobs', jobs);
+  save('inventory', inventory);
+  renderJobs('all');
+  renderInventory('All');
+  showTab('jobs');
+}
+
+// WIRE UP (runs after HTML loads) -------
+document.addEventListener('DOMContentLoaded', () => {
+  // tabs
+  $('jobsTab').addEventListener('click', () => showTab('jobs'));
+  $('inventoryTab').addEventListener('click', () => showTab('inventory'));
+  $('importTab').addEventListener('click', () => showTab('import'));
+
+  // jobs
+  $('addJobBtn').addEventListener('click', addJob);
+  $('filterAllBtn').addEventListener('click', () => renderJobs('all'));
+  $('filterTodoBtn').addEventListener('click', () => renderJobs('To-do'));
+  $('filterDoneBtn').addEventListener('click', () => renderJobs('Done'));
+
+  // inventory
+  $('addInvBtn').addEventListener('click', addOrUpdateItem);
+  document.querySelectorAll('#inventorySection [data-filter]').forEach(btn => {
+    btn.addEventListener('click', () => renderInventory(btn.getAttribute('data-filter')));
   });
 
-  // ===== INVENTORY =====
-  const invT  = $("#invTable");
-  $("#invForm").addEventListener("submit",(e)=>{
-    e.preventDefault();
-    const item = {
-      id: Date.now(),
-      type: $("#invType").value,
-      name: $("#invName").value.trim(),
-      qty: parseInt($("#invQty").value || "0",10),
-      loc: $("#invLoc").value.trim()
-    };
-    if(!item.name) return;
-    const existing = state.inventory.find(i=>i.type===item.type && i.name.toLowerCase()===item.name.toLowerCase());
-    if (existing){ existing.qty = item.qty; existing.loc = item.loc; }
-    else { state.inventory.unshift(item); }
-    save(); e.target.reset(); renderInv(activeInvFilter());
-  });
+  // export/import
+  $('exportBtn').addEventListener('click', doExport);
+  $('importBtn').addEventListener('click', doImport);
 
-  document.querySelectorAll('[data-itype]').forEach(btn=>{
-    btn.addEventListener("click",()=>{
-      document.querySelectorAll('[data-itype]').forEach(b=>b.classList.remove("active"));
-      btn.classList.add("active");
-      renderInv(btn.dataset.itype);
-    });
-  });
-
-  function activeInvFilter(){ return document.querySelector('[data-itype].active')?.dataset.itype || "all"; }
-
-  function renderInv(filter="all"){
-    invT.innerHTML="";
-    const list = state.inventory.filter(i=> filter==="all" ? true : i.type===filter);
-    list.forEach(i=>{
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${cap(i.type)}</td>
-        <td>${i.name}</td>
-        <td>${i.qty}</td>
-        <td>${i.loc||""}</td>
-        <td class="actions">
-          <button data-id="${i.id}" data-act="plus">+1</button>
-          <button data-id="${i.id}" data-act="minus">-1</button>
-          <button data-id="${i.id}" data-act="idel">Delete</button>
-        </td>`;
-      invT.appendChild(tr);
-    });
-  }
-
-  invT.addEventListener("click",(e)=>{
-    const btn = e.target.closest("button[data-act]");
-    if(!btn) return;
-    const id = btn.dataset.id;
-    const act = btn.dataset.act;
-    const it = state.inventory.find(x=> String(x.id)===id);
-    if(!it) return;
-    if(act==="plus") it.qty++;
-    if(act==="minus") it.qty = Math.max(0, it.qty-1);
-    if(act==="idel") state.inventory = state.inventory.filter(x=> String(x.id)!==id);
-    save(); renderInv(activeInvFilter());
-  });
-
-  function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
-
-  // ===== BACKUP =====
-  $("#exportBtn").addEventListener("click",()=>{
-    const blob = new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
-    const url = URL.createObjectURL(blob); const a = document.createElement("a");
-    a.href=url; a.download="al-log-export.json"; a.click(); URL.revokeObjectURL(url);
-  });
-  $("#importBtn").addEventListener("click",()=>{
-    const f = $("#importFile").files[0]; if(!f) return alert("Choose a .json file");
-    const r = new FileReader();
-    r.onload=()=>{ state = JSON.parse(r.result); save(); renderJobs(activeJobFilter()); renderInv(activeInvFilter()); alert("Imported!"); };
-    r.readAsText(f);
-  });
-
-  // initial render
-  renderJobs(); renderInv();
+  // first render
+  renderJobs('all');
+  renderInventory('All');
+  showTab('jobs');
 });
