@@ -1,0 +1,142 @@
+/* ========== Base ========== */
+:root{
+  --bg: #0b1020;           /* dark indigo background */
+  --panel: #11172b;        /* card */
+  --soft: #1b2340;         /* inputs / subtle areas */
+  --text: #e7ecff;         /* main text */
+  --muted: #a9b3d1;        /* secondary text */
+  --brand: #4f7cff;        /* buttons / active */
+  --brand-2: #6ee7b7;      /* accent */
+  --danger: #ff6b6b;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --radius: 14px;
+  --shadow: 0 10px 30px rgba(0,0,0,.25);
+}
+
+/* Light mode (auto) */
+@media (prefers-color-scheme: light){
+  :root{
+    --bg: #f6f8ff;
+    --panel: #ffffff;
+    --soft: #eef1ff;
+    --text: #0f172a;
+    --muted: #475569;
+    --brand: #365cff;
+    --shadow: 0 8px 22px rgba(45, 62, 120, .12);
+  }
+}
+
+*{ box-sizing: border-box; }
+html,body{ height:100%; }
+body{
+  margin:0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  color: var(--text);
+  background: radial-gradient(1200px 800px at 20% -10%, #233063 0, transparent 60%),
+              radial-gradient(1000px 700px at 100% 0%, #1a2247 0, transparent 60%),
+              var(--bg);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.35;
+}
+
+/* ========== Layout ========== */
+.container{
+  max-width: 980px;
+  margin: 32px auto;
+  padding: 0 16px;
+}
+
+header{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom: 18px;
+}
+h1{
+  font-size: clamp(28px, 5vw, 40px);
+  margin: 0 0 6px;
+  letter-spacing: .3px;
+}
+.subtitle{
+  color: var(--muted);
+  margin: 0 0 18px;
+}
+
+/* ========== Tabs ========== */
+nav{
+  display:flex; gap:10px; flex-wrap: wrap;
+  margin: 18px 0 22px;
+}
+nav button{
+  appearance:none; border:1px solid transparent; cursor:pointer;
+  background: var(--panel); color: var(--text);
+  padding: 10px 14px; border-radius: 999px;
+  box-shadow: var(--shadow);
+  transition: transform .06s ease, background .2s ease, border-color .2s ease;
+}
+nav button.active{ background: var(--brand); border-color: transparent; }
+nav button:active{ transform: translateY(1px) scale(.98); }
+
+/* ========== Card Sections ========== */
+section.card{
+  background: var(--panel);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow);
+  margin-bottom: 22px;
+}
+section.card h2{
+  font-size: 20px; margin: 0 0 14px;
+}
+
+/* ========== Forms ========== */
+.form-row{ display:grid; grid-template-columns: 1fr; gap:10px; }
+@media (min-width: 560px){
+  .form-row{ grid-template-columns: 1.2fr 1.8fr 1.2fr 1fr 1fr; }
+}
+label{ font-weight:600; font-size: 13px; color: var(--muted); }
+input, select{
+  width: 100%;
+  background: var(--soft);
+  border: 1px solid transparent;
+  color: var(--text);
+  padding: 12px 12px;
+  border-radius: 10px;
+  outline: none;
+}
+input::placeholder{ color: #97a2c7; }
+
+/* Buttons */
+.btn{
+  appearance:none; border:none; cursor:pointer; user-select:none;
+  background: var(--brand); color: white; font-weight:600;
+  padding: 12px 16px; border-radius: 10px;
+  box-shadow: var(--shadow);
+}
+.btn.secondary{ background: var(--soft); color: var(--text); }
+.btn.ghost{ background: transparent; border: 1px solid rgba(255,255,255,.15); }
+
+/* ========== Tables ========== */
+.table{
+  width:100%; border-collapse: collapse; margin-top: 10px;
+}
+.table th, .table td{
+  text-align:left; padding: 12px 10px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.table tr:hover{ background: rgba(255,255,255,.03); }
+.actions button{
+  margin-right: 6px; padding: 8px 10px; border-radius: 8px; font-size: 12px;
+}
+.badge{ padding: 6px 10px; border-radius: 999px; font-size:12px; font-weight:600; }
+.badge.todo{ background: rgba(251,191,36,.18); color: var(--warn); }
+.badge.done{ background: rgba(52,211,153,.18); color: var(--ok); }
+
+/* ========== Backup box ========== */
+.backup{
+  display:flex; flex-wrap: wrap; gap:10px; align-items:center;
+}
+
+/* Small helpers */
+.mono{ font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.hidden{ display:none !important; }
