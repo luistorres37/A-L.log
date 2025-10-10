@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>A&L Log</title>
-  <link rel="stylesheet" href="style.css?v=3" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="app.js" defer></script>
 </head>
 <body>
   <main class="container">
@@ -14,105 +14,84 @@
 
     <!-- Tabs -->
     <nav class="nav">
-      <button id="jobsTab" class="tab active" type="button">Jobs</button>
-      <button id="inventoryTab" class="tab" type="button">Inventory</button>
-      <button id="importTab" class="tab" type="button">Export / Import</button>
+      <button id="jobsTab" class="tab active">Jobs</button>
+      <button id="inventoryTab" class="tab">Inventory</button>
+      <button id="importTab" class="tab">Export / Import</button>
     </nav>
 
     <!-- JOBS -->
     <section id="jobsSection" class="card">
       <h2>Jobs</h2>
 
-      <!-- IMPORTANT: Date input is back with id="jobDate" -->
-      <div class="form-grid">
-        <input id="jobLot"      placeholder="Lot # / Name" />
-        <input id="jobAddress"  placeholder="Address" />
-        <input id="jobTask"     class="full" placeholder="Task (Backsplash, Demo, etc.)" />
-        <input id="jobDate"     type="date" />
-        <select id="jobStatus">
-          <option value="todo">To-do</option>
-          <option value="done">Done</option>
-        </select>
+      <input id="lotInput" placeholder="Lot # / Name" />
+      <input id="addressInput" placeholder="Address" />
+      <input id="taskInput" placeholder="Task (Backsplash, Demo, etc.)" />
+      <input id="dateInput" type="date" />
+      <select id="statusSelect">
+        <option>To-do</option>
+        <option>Done</option>
+      </select>
+
+      <div class="actions">
+        <button id="addJobBtn" type="button" class="primary">Add job</button>
+        <button id="filterAllBtn" type="button">All</button>
+        <button id="filterTodoBtn" type="button">To-do</button>
+        <button id="filterDoneBtn" type="button">Done</button>
       </div>
 
-      <div class="row mt-12">
-        <button id="addJobBtn" class="btn btn-primary" type="button">Add job</button>
-        <div class="row">
-          <button id="filterAll"  class="btn-chip active" type="button">All</button>
-          <button id="filterTodo" class="btn-chip"        type="button">To-do</button>
-          <button id="filterDone" class="btn-chip"        type="button">Done</button>
-        </div>
-      </div>
-
-      <table id="jobsTable" class="table mt-18">
-        <thead><tr><th>Lot</th><th>Address</th><th>Task</th><th>Date</th><th>Status</th><th></th></tr></thead>
-        <tbody></tbody>
+      <table class="table">
+        <thead>
+          <tr><th>Lot</th><th>Address</th><th>Task</th><th>Date</th><th>Status</th></tr>
+        </thead>
+        <tbody id="jobsBody"></tbody>
       </table>
     </section>
 
     <!-- INVENTORY -->
-    <section id="inventorySection" class="card hidden">
+    <section id="inventorySection" class="card" hidden>
       <h2>Inventory</h2>
-      <div class="form-grid">
-        <select id="invType">
-          <option value="Caulk">Caulk</option>
-          <option value="Grout">Grout</option>
-          <option value="Tool">Tool</option>
-          <option value="Other">Other</option>
-        </select>
-        <input id="invName" placeholder="Name / Color (e.g., Mapei #38 Avalanche)" />
-        <input id="invQty"  type="number" min="0" placeholder="Qty" />
-        <input id="invLoc"  placeholder="Location (Truck, Garage)" />
+
+      <select id="invType">
+        <option>Caulk</option>
+        <option>Grout</option>
+        <option>Tool</option>
+        <option>Other</option>
+      </select>
+      <input id="invName" placeholder="Name / Color (e.g., Mapei #38 Avalanche)" />
+      <input id="invQty" type="number" inputmode="numeric" placeholder="Qty" />
+      <input id="invLoc" placeholder="Location (Truck, Garage)" />
+
+      <div class="actions">
+        <button id="addInvBtn" type="button" class="primary">Add / Update item</button>
+        <button data-filter="All" class="chip">All</button>
+        <button data-filter="Caulk" class="chip">Caulk</button>
+        <button data-filter="Grout" class="chip">Grout</button>
+        <button data-filter="Tool"  class="chip">Tool</button>
+        <button data-filter="Other" class="chip">Other</button>
       </div>
 
-      <div class="row mt-12">
-        <button id="addInvBtn" class="btn btn-primary" type="button">Add / Update item</button>
-        <div class="row">
-          <button id="invAll"   class="btn-chip active" type="button">All</button>
-          <button id="invCaulk" class="btn-chip"        type="button">Caulk</button>
-          <button id="invGrout" class="btn-chip"        type="button">Grout</button>
-          <button id="invTool"  class="btn-chip"        type="button">Tool</button>
-          <button id="invOther" class="btn-chip"        type="button">Other</button>
-        </div>
-      </div>
-
-      <table id="invTable" class="table mt-18">
-        <thead><tr><th>Type</th><th>Name</th><th>Qty</th><th>Location</th><th></th></tr></thead>
-        <tbody></tbody>
+      <table class="table">
+        <thead>
+          <tr><th>Type</th><th>Name</th><th>Qty</th><th>Location</th></tr>
+        </thead>
+        <tbody id="invBody"></tbody>
       </table>
     </section>
 
     <!-- EXPORT / IMPORT -->
-    <section id="importExport" class="card hidden">
+    <section id="importSection" class="card" hidden>
       <h2>Export / Import</h2>
-      <div class="row">
-        <button id="exportBtn" class="btn btn-ghost" type="button">Export data</button>
-        <input id="importFile" type="file" accept=".json" />
-        <button id="importBtn" class="btn btn-primary" type="button">Import</button>
+      <div class="actions">
+        <button id="exportBtn" class="chip">Export data</button>
+        <label class="chip">
+          <input id="importFile" type="file" hidden />
+          Choose File
+        </label>
+        <span id="fileName" class="muted">no file selected</span>
+        <button id="importBtn" class="chip">Import</button>
       </div>
+      <p class="muted">Export saves a JSON file of your Jobs + Inventory. Import will replace your current data with a file you pick.</p>
     </section>
-
-    <div id="toast" class="toast"></div>
   </main>
-
-  <!-- Tiny tab script (doesn't touch your app.js) -->
-  <script>
-    body { background:#111 !important; }
-    const tabs = [
-      {btn:'jobsTab',      sec:'jobsSection'},
-      {btn:'inventoryTab', sec:'inventorySection'},
-      {btn:'importTab',    sec:'importExport'}
-    ];
-    function show(name){
-      tabs.forEach(t=>{
-        document.getElementById(t.btn).classList.toggle('active', t.sec===name);
-        document.getElementById(t.sec).classList.toggle('hidden', t.sec!==name);
-      });
-      window.scrollTo({top:0, behavior:'instant'});
-    }
-    tabs.forEach(t=>document.getElementById(t.btn).onclick=()=>show(t.sec));
-  </script>
-
-  <script src="app.js?v=3"></script>
 </body>
 </html>
