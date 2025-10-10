@@ -1,23 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Loop Log</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>A&L Log</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Welcome to Loop Log</h1>
-  <p>This will track repairs and inventory.</p>
+  <div class="app">
+    <h1>A&L Log</h1>
+    <p class="small">Jobs and inventory for the crew. Data saves on your phone.</p>
 
-  <h2>Add a Repair</h2>
-  <form id="repairForm">
-    <input type="text" id="repairInput" placeholder="Enter repair details" required>
-    <button type="submit">Add</button>
-  </form>
+    <nav>
+      <button data-tab="jobs" class="active">Jobs</button>
+      <button data-tab="inventory">Inventory</button>
+      <button data-tab="backup">Export / Import</button>
+    </nav>
 
-  <h2>Repair Log</h2>
-  <ul id="repairList"></ul>
+    <!-- JOBS -->
+    <section id="jobs" class="card">
+      <h2>Jobs</h2>
+      <form id="jobForm" class="grid">
+        <div>
+          <label>Lot # / Name</label>
+          <input id="jobLot" placeholder="Lot-7531" required />
+        </div>
+        <div>
+          <label>Address</label>
+          <input id="jobAddr" placeholder="123 Main St, City" />
+        </div>
+        <div>
+          <label>Task</label>
+          <input id="jobTask" placeholder="Backsplash, demo, etc." />
+        </div>
+        <div>
+          <label>Date</label>
+          <input id="jobDate" type="date" />
+        </div>
+        <div>
+          <label>Status</label>
+          <select id="jobStatus">
+            <option value="todo">⏳ To-do</option>
+            <option value="done">✅ Done</option>
+          </select>
+        </div>
+        <button type="submit">Add job</button>
+      </form>
+
+      <div class="filters">
+        <button data-filter="all" class="active">All</button>
+        <button data-filter="todo">To-do</button>
+        <button data-filter="done">Done</button>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Lot</th><th>Address</th><th>Task</th><th>Date</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody id="jobsTable"></tbody>
+      </table>
+    </section>
+
+    <!-- INVENTORY -->
+    <section id="inventory" class="card" style="display:none">
+      <h2>Inventory</h2>
+      <form id="invForm" class="grid">
+        <div>
+          <label>Type</label>
+          <select id="invType">
+            <option value="caulk">Caulk</option>
+            <option value="grout">Grout</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label>Color / Name</label>
+          <input id="invName" placeholder="e.g. Mapei #77 Frost" required />
+        </div>
+        <div>
+          <label>Qty</label>
+          <input id="invQty" type="number" min="0" value="0" required />
+        </div>
+        <div>
+          <label>Location</label>
+          <input id="invLoc" placeholder="Truck 1 / Shop" />
+        </div>
+        <button type="submit">Add / Update</button>
+      </form>
+
+      <div class="filters">
+        <button data-itype="all" class="active">All</button>
+        <button data-itype="caulk">Caulk</button>
+        <button data-itype="grout">Grout</button>
+        <button data-itype="other">Other</button>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Type</th><th>Color / Name</th><th>Qty</th><th>Location</th><th></th></tr>
+        </thead>
+        <tbody id="invTable"></tbody>
+      </table>
+    </section>
+
+    <!-- BACKUP -->
+    <section id="backup" class="card" style="display:none">
+      <h2>Export / Import</h2>
+      <button id="exportBtn">Export JSON</button>
+      <input type="file" id="importFile" accept="application/json" />
+      <button id="importBtn">Import JSON</button>
+      <p class="small">Export to back up or share; import on another phone to load data.</p>
+    </section>
+  </div>
 
   <script src="app.js"></script>
 </body>
