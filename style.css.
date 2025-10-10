@@ -1,24 +1,55 @@
-/* basic look */
-:root { font-family: -apple-system, system-ui, Segoe UI, Roboto, Arial; }
-body { margin: 16px; background:#fafafa; color:#222; }
-.app { max-width: 900px; margin: 0 auto; }
-h1 { margin: 0 0 6px; }
-.small { color:#666; font-size:12px; }
-
-nav { display:flex; gap:8px; margin: 14px 0 18px; flex-wrap: wrap; }
-nav button { padding:8px 12px; border:1px solid #ddd; background:#f6f6f6; border-radius:8px; }
-nav button.active { background:#e9f2ff; border-color:#9ec0ff; }
-
-.card { background:#fff; border:1px solid #e6e6e6; border-radius:10px; padding:14px; margin:12px 0; }
-.grid { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:8px; }
-@media (max-width:700px){ .grid{ grid-template-columns: 1fr 1fr; } }
-label { font-size:12px; color:#555; display:block; }
-input, select { width:100%; padding:8px; border:1px solid #ddd; border-radius:8px; }
-
-.filters { display:flex; gap:8px; margin:8px 0 4px; flex-wrap:wrap; }
-.filters button { padding:6px 10px; border:1px solid #ddd; border-radius:8px; background:#f6f6f6; }
-.filters button.active { background:#eefbe8; border-color:#b7e2a5; }
-
-table { width:100%; border-collapse:collapse; font-size:14px; }
-th, td { border-bottom:1px solid #eee; padding:8px; text-align:left; vertical-align:top; }
-.actions button { margin-right:6px; padding:4px 8px; border:1px solid #ddd; border-radius:6px; background:#f6f6f6; }
+:root{
+  --bg:#0b1020; --panel:#11172b; --soft:#1b2340;
+  --text:#e7ecff; --muted:#a9b3d1; --brand:#4f7cff;
+  --brand-2:#6ee7b7; --ok:#34d399; --warn:#fbbf24;
+  --radius:14px; --shadow:0 10px 30px rgba(0,0,0,.25);
+}
+@media (prefers-color-scheme: light){
+  :root{ --bg:#f6f8ff; --panel:#fff; --soft:#eef1ff;
+         --text:#0f172a; --muted:#475569; --brand:#365cff;
+         --shadow:0 8px 22px rgba(45,62,120,.12); }
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  color:var(--text);
+  background: radial-gradient(1200px 800px at 20% -10%, #233063 0, transparent 60%),
+              radial-gradient(1000px 700px at 100% 0%, #1a2247 0, transparent 60%),
+              var(--bg);
+  -webkit-font-smoothing:antialiased; line-height:1.35;
+}
+/* layout */
+.container{max-width:980px;margin:32px auto;padding:0 16px}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+h1{font-size:clamp(28px,5vw,40px);margin:0 0 6px}
+.subtitle{color:var(--muted);margin:0 0 18px}
+/* tabs */
+nav{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 22px}
+nav button{appearance:none;border:1px solid transparent;cursor:pointer;background:var(--panel);color:var(--text);padding:10px 14px;border-radius:999px;box-shadow:var(--shadow);transition:transform .06s,background .2s,border-color .2s}
+nav button.active{background:var(--brand)}
+nav button:active{transform:translateY(1px) scale(.98)}
+/* cards */
+.card{background:var(--panel);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);margin-bottom:22px}
+.card h2{font-size:20px;margin:0 0 14px}
+/* forms */
+.form-row{display:grid;grid-template-columns:1fr;gap:10px}
+@media (min-width:560px){.form-row{grid-template-columns:1.2fr 1.8fr 1.2fr 1fr 1fr}}
+label{font-weight:600;font-size:13px;color:var(--muted)}
+input,select{width:100%;background:var(--soft);border:1px solid transparent;color:var(--text);padding:12px;border-radius:10px;outline:none}
+input::placeholder{color:#97a2c7}
+/* buttons */
+.btn{appearance:none;border:none;cursor:pointer;user-select:none;background:var(--brand);color:#fff;font-weight:600;padding:12px 16px;border-radius:10px;box-shadow:var(--shadow)}
+.btn.secondary{background:var(--soft);color:var(--text)}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.15)}
+/* table */
+.table{width:100%;border-collapse:collapse;margin-top:10px}
+.table th,.table td{text-align:left;padding:12px 10px;border-bottom:1px solid rgba(255,255,255,.08)}
+.table tr:hover{background:rgba(255,255,255,.03)}
+.actions button{margin-right:6px;padding:8px 10px;border-radius:8px;font-size:12px}
+.badge{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:600}
+.badge.todo{background:rgba(251,191,36,.18);color:var(--warn)}
+.badge.done{background:rgba(52,211,153,.18);color:var(--ok)}
+/* misc */
+.backup{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.hidden{display:none !important}
